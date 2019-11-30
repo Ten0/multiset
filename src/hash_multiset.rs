@@ -7,9 +7,10 @@
 // except according to those terms.
 #![warn(missing_docs)]
 
+use super::Iter;
+
 use std::borrow::Borrow;
-use std::collections::hash_map;
-use std::collections::hash_map::{Entry, Keys};
+use std::collections::hash_map::{self, Entry, Keys};
 use std::collections::HashMap;
 use std::fmt;
 use std::hash::Hash;
@@ -21,45 +22,6 @@ use std::ops::{Add, Sub};
 pub struct HashMultiSet<K> {
     elem_counts: HashMap<K, usize>,
     size: usize,
-}
-
-/// An iterator over the items of a `HashMultiSet`.
-///
-/// This `struct` is created by the [`iter`] method on [`HashMultiSet`].
-pub struct Iter<'a, K: 'a> {
-    iter: hash_map::Iter<'a, K, usize>,
-    duplicate: Option<(&'a K, &'a usize)>,
-    duplicate_index: usize,
-}
-
-impl<'a, K> Clone for Iter<'a, K> {
-    fn clone(&self) -> Iter<'a, K> {
-        Iter {
-            iter: self.iter.clone(),
-            duplicate: self.duplicate.clone(),
-            duplicate_index: self.duplicate_index,
-        }
-    }
-}
-impl<'a, K> Iterator for Iter<'a, K> {
-    type Item = &'a K;
-
-    fn next(&mut self) -> Option<&'a K> {
-        if self.duplicate.is_none() {
-            self.duplicate = self.iter.next();
-        }
-        if self.duplicate.is_some() {
-            let (key, count) = self.duplicate.unwrap();
-            self.duplicate_index += 1;
-            if &self.duplicate_index >= count {
-                self.duplicate = None;
-                self.duplicate_index = 0;
-            }
-            Some(key)
-        } else {
-            None
-        }
-    }
 }
 
 impl<K> HashMultiSet<K>
@@ -100,11 +62,12 @@ where
     /// }
     /// assert_eq!(3, multiset.iter().count());
     /// ```
-    pub fn iter(&self) -> Iter<K> {
+    pub fn iter(&self) -> Iter<&K, &usize, hash_map::Iter<K, usize>> {
         Iter {
             iter: self.elem_counts.iter(),
             duplicate: None,
             duplicate_index: 0,
+            _ghost: std::marker::PhantomData,
         }
     }
 
