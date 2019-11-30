@@ -13,8 +13,16 @@
 //! permit duplicates. Consequently, they're useful for maintaining a
 //! count of distinct values.
 
-mod btree_multiset;
-mod hash_multiset;
+#[macro_use]
+mod multiset;
+
+mod btree_multiset {
+	__impl_multiset! {BTreeMultiSet, std::collections::BTreeMap, std::collections::btree_map, Ord}
+}
+mod hash_multiset {
+	use std::hash::Hash;
+	__impl_multiset! {HashMultiSet, std::collections::HashMap, std::collections::hash_map, Eq;Hash}
+}
 mod iter;
 
 pub use btree_multiset::BTreeMultiSet;
