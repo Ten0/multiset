@@ -59,18 +59,16 @@ impl<K: Clone, V: Borrow<usize>, InnerIter: Iterator<Item = (K, V)>> Iterator
             }
             self.len -= 1;
             Some(key)
-        } else {
-            if let Some((key, count)) = self.duplicate_back.as_ref() {
-                self.duplicate_index_back += 1;
-                let key = key.clone();
-                if self.duplicate_index_back >= *count.borrow() {
-                    self.duplicate_back = None;
-                }
-                self.len -= 1;
-                Some(key)
-            } else {
-                None
+        } else if let Some((key, count)) = self.duplicate_back.as_ref() {
+            self.duplicate_index_back += 1;
+            let key = key.clone();
+            if self.duplicate_index_back >= *count.borrow() {
+                self.duplicate_back = None;
             }
+            self.len -= 1;
+            Some(key)
+        } else {
+            None
         }
     }
 
@@ -128,18 +126,16 @@ impl<K: Clone, V: Borrow<usize>, InnerIter: Iterator<Item = (K, V)> + DoubleEnde
             }
             self.len -= 1;
             Some(key)
-        } else {
-            if let Some((key, count)) = self.duplicate.as_ref() {
-                self.duplicate_index += 1;
-                let key = key.clone();
-                if self.duplicate_index >= *count.borrow() {
-                    self.duplicate = None;
-                }
-                self.len -= 1;
-                Some(key)
-            } else {
-                None
+        } else if let Some((key, count)) = self.duplicate.as_ref() {
+            self.duplicate_index += 1;
+            let key = key.clone();
+            if self.duplicate_index >= *count.borrow() {
+                self.duplicate = None;
             }
+            self.len -= 1;
+            Some(key)
+        } else {
+            None
         }
     }
 
