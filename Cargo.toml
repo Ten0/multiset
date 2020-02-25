@@ -9,3 +9,4 @@ authors = ["Jake Mitchell <jacob.d.mitchell@gmail.com>"]
 
 [dev-dependencies]
 quickcheck = "0.9.1"
+quickcheck_macros = "0.9.1"
